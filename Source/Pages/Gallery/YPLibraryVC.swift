@@ -310,6 +310,7 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         let completion = { (isLowResIntermediaryImage: Bool) in
             self.v.hideOverlayView()
             self.v.assetViewContainer.updateSquareCropButtonState()
+            self.v.assetZoomableView.fitImage(true)
             self.updateCropInfo()
             if !isLowResIntermediaryImage {
                 self.v.hideLoader()
