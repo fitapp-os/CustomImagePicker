@@ -108,6 +108,9 @@ public struct YPImagePickerConfiguration {
     
     /// Defines if the bottom bar should be hidden when showing the picker. Default is false.
     public var hidesBottomBar = false
+    
+    /// Custom View Controller that is displayed if YPPickerScreen.custom option is included in visible screens. Default is nil.
+    public var customViewController: UIViewController?
 
     /// Defines the preferredStatusBarAppearance
     public var preferredStatusBarStyle = UIStatusBarStyle.default
@@ -191,6 +194,15 @@ public struct YPConfigLibrary {
     
     /// Set the overlay type shown on top of the selected library item
     public var itemOverlayType: YPItemOverlayType = .grid
+    
+    /// Custom crop/rotate/multiple selection button size. Defaults to 42.
+    public var buttonSize: CGFloat = 42
+
+    /// Custom background color for crop/rotate/multiple selection buttons. Defaults to nil.
+    public var buttonBackgroundColor: UIColor? = nil
+    
+    /// Rotation angle for image. If this angle is not nil, the rotation button is visible. Defaults to nil.
+    public var rotationAngle: CGFloat? = nil
 }
 
 /// Encapsulates video specific settings.

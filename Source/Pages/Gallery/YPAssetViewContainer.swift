@@ -13,25 +13,29 @@ import AVFoundation
 
 /// The container for asset (video or image). It containts the YPGridView and YPAssetZoomableView.
 final class YPAssetViewContainer: UIView {
-    public var zoomableView: YPAssetZoomableView
-    public var itemOverlay: UIView?
     public let curtain = UIView()
     public let spinnerView = UIView()
     public let squareCropButton = UIButton()
+    public let rotateButton = UIButton()
     public let multipleSelectionButton: UIButton = {
         let v = UIButton()
         v.setImage(YPConfig.icons.multipleSelectionOffIcon, for: .normal)
         return v
     }()
+    
+    public var zoomableView: YPAssetZoomableView
+    public var itemOverlay: UIView?
     public var onlySquare = YPConfig.library.onlySquare
     public var isShown = true
     public var spinnerIsShown = false
+    public var itemOverlayType = YPConfig.library.itemOverlayType
+    public var rotationAngle = YPConfig.library.rotationAngle
+    
+    public private(set) var currentRotationAngle: CGFloat = 0
     
     private let spinner = UIActivityIndicatorView(style: .medium)
     private var shouldCropToSquare = YPConfig.library.isSquareByDefault
     private var isMultipleSelectionEnabled = false
-
-    public var itemOverlayType = YPConfig.library.itemOverlayType
 
     init(frame: CGRect, zoomableView: YPAssetZoomableView) {
         self.zoomableView = zoomableView
@@ -81,16 +85,38 @@ final class YPAssetViewContainer: UIView {
         if !onlySquare {
             // Crop Button
             squareCropButton.setImage(YPConfig.icons.cropIcon, for: .normal)
+            
+            if let backgroundColor = YPConfig.library.buttonBackgroundColor {
+                squareCropButton.layer.masksToBounds = true
+                squareCropButton.layer.cornerRadius = YPConfig.library.buttonSize / 2
+                squareCropButton.backgroundColor = backgroundColor
+            }
+            
             subviews(squareCropButton)
-            squareCropButton.size(42)
+            squareCropButton.size(YPConfig.library.buttonSize)
             |-15-squareCropButton
             squareCropButton.Bottom == self.Bottom - 15
+        }
+        
+        if YPConfig.library.rotationAngle != nil {
+            // Rotate button
+            rotateButton.setImage(YPConfig.icons.rotateIcon, for: .normal)
+            if let backgroundColor = YPConfig.library.buttonBackgroundColor {
+                rotateButton.layer.masksToBounds = true
+                rotateButton.layer.cornerRadius = YPConfig.library.buttonSize / 2
+                rotateButton.backgroundColor = backgroundColor
+            }
+            
+            subviews(rotateButton)
+            rotateButton.size(YPConfig.library.buttonSize)
+            rotateButton-15-|
+            rotateButton.Bottom == self.Bottom - 15
         }
 
         // Multiple selection button
         subviews(multipleSelectionButton)
-        multipleSelectionButton.size(42).trailing(15)
-        multipleSelectionButton.Bottom == self.Bottom - 15
+        multipleSelectionButton.size(YPConfig.library.buttonSize).trailing(15)
+        multipleSelectionButton.Bottom == zoomableView.Bottom - (15 + (rotationAngle != nil ? YPConfig.library.buttonSize + 10 : 0))
     }
 
     required init?(coder: NSCoder) {
@@ -104,6 +130,7 @@ final class YPAssetViewContainer: UIView {
     @objc public func squareCropButtonTapped() {
         let z = zoomableView.zoomScale
         shouldCropToSquare = (z >= 1 && z < zoomableView.squaredZoomScale)
+        squareCropButton.setImage(z <= 1 ? YPConfig.icons.shrinkIcon : YPConfig.icons.cropIcon, for: .normal)
         zoomableView.fitImage(shouldCropToSquare, animated: true)
     }
 
@@ -128,6 +155,14 @@ final class YPAssetViewContainer: UIView {
         let isImageASquare = selectedAssetImage.size.width == selectedAssetImage.size.height
         squareCropButton.isHidden = isImageASquare
     }
+    
+    // MARK: - Rotate button
+    
+    @objc public func rotateButtonTapped() {
+        guard let rotationAngle = YPConfig.library.rotationAngle else { return }
+           currentRotationAngle += rotationAngle * .pi / 180
+           zoomableView.transform = CGAffineTransform(rotationAngle: currentRotationAngle)
+       }
     
     // MARK: - Multiple selection
 
@@ -157,6 +192,8 @@ extension YPAssetViewContainer: YPAssetZoomableViewDelegate {
             self.addSubview(zoomableView.videoView.playImageView)
             zoomableView.videoView.playImageView.centerInContainer()
         }
+        
+        squareCropButton.setImage(zoomableView.zoomScale <= 1 ? YPConfig.icons.shrinkIcon : YPConfig.icons.cropIcon, for: .normal)
     }
     
     public func ypAssetZoomableViewScrollViewDidZoom() {

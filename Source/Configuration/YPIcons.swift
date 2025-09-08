@@ -27,4 +27,6 @@ public struct YPIcons {
     public var captureVideoOnImage: UIImage = imageFromBundle("yp_iconVideoCaptureRecording")
     public var playImage: UIImage = imageFromBundle("yp_play")
     public var removeImage: UIImage = imageFromBundle("yp_remove")
+    public var shrinkIcon: UIImage = imageFromBundle("yp_iconCrop")
+    public var rotateIcon: UIImage = imageFromBundle("yp_iconRotate")
 }

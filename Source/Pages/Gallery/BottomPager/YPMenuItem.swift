@@ -42,7 +42,7 @@ final class YPMenuItem: UIView {
         
         textLabel.style { l in
             l.textAlignment = .center
-            l.font = YPConfig.fonts.menuItemFont
+            l.font = YPConfig.fonts.menuItemFontSelected
             l.textColor = YPImagePickerConfiguration.shared.colors.bottomMenuItemUnselectedTextColor
             l.adjustsFontSizeToFitWidth = true
             l.numberOfLines = 2
@@ -51,9 +51,11 @@ final class YPMenuItem: UIView {
 
     func select() {
         textLabel.textColor = YPImagePickerConfiguration.shared.colors.bottomMenuItemSelectedTextColor
+        textLabel.font = YPConfig.fonts.menuItemFontSelected
     }
     
     func deselect() {
         textLabel.textColor = YPImagePickerConfiguration.shared.colors.bottomMenuItemUnselectedTextColor
+        textLabel.font = YPConfig.fonts.menuItemFontUnselected
     }
 }

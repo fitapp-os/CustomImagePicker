@@ -25,7 +25,8 @@ public struct YPFonts {
 
     public var albumCellNumberOfItemsFont: UIFont = .systemFont(ofSize: 12, weight: .regular)
 
-    public var menuItemFont: UIFont = .systemFont(ofSize: 17, weight: .semibold)
+    public var menuItemFontSelected: UIFont = .systemFont(ofSize: 17, weight: .bold)
+    public var menuItemFontUnselected: UIFont = .systemFont(ofSize: 17, weight: .medium)
 
     public var filterNameFont: UIFont = .systemFont(ofSize: 11, weight: .regular)
     public var filterSelectionSelectedFont: UIFont = .systemFont(ofSize: 11, weight: .semibold)

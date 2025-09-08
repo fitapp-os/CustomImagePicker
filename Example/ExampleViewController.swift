@@ -77,7 +77,7 @@ class ExampleViewController: UIViewController {
         /* Uncomment and play around with the configuration 👨‍🔬 🚀 */
 
         /* Set this to true if you want to force the  library output to be a squared image. Defaults to false */
-        // config.library.onlySquare = true
+        config.library.onlySquare = true
 
         /* Set this to true if you want to force the camera output to be a squared image. Defaults to true */
         // config.onlySquareImagesFromCamera = false
@@ -121,10 +121,24 @@ class ExampleViewController: UIViewController {
 
         /* Defines which screens are shown at launch, and their order.
            Default value is `[.library, .photo]` */
-        config.screens = [.library, .photo, .video]
+        config.screens = [.library, .photo, .custom]
+        
+        /* Custom VC example */
+        let customVC = UIViewController()
+        customVC.title = "Test VC"
+        config.customViewController = customVC
+        
+        config.library.maxNumberOfItems = 1
+        config.library.minNumberOfItems = 1
+        config.library.rotationAngle = -90
+        config.library.buttonBackgroundColor = .white
+        config.library.buttonSize = 40
+        config.targetImageSize = .original
+        config.usesFrontCamera = true
+        config.showsPhotoFilters = false
 
         /* Can forbid the items with very big height with this property */
-        config.library.minWidthForItem = UIScreen.main.bounds.width * 0.8
+        // config.library.minWidthForItem = UIScreen.main.bounds.width * 0.8
 
         /* Defines the time limit for recording videos.
            Default is 30 seconds. */
@@ -157,7 +171,6 @@ class ExampleViewController: UIViewController {
 
         config.maxCameraZoomFactor = 2.0
 
-        config.library.maxNumberOfItems = 5
         config.gallery.hidesRemoveButton = false
 
         /* Disable scroll to change between mode */

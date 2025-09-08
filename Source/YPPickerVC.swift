@@ -34,11 +34,13 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         case library
         case camera
         case video
+        case custom
     }
     
     private var libraryVC: YPLibraryVC?
     private var cameraVC: YPCameraVC?
     private var videoVC: YPVideoCaptureVC?
+    private var customVC: UIViewController?
     
     var mode = Mode.camera
     
@@ -82,6 +84,11 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
             }
         }
         
+        // Custom
+        if YPConfig.screens.contains(.custom) {
+            customVC = YPConfig.customViewController
+        }
+        
         // Show screens
         var vcs = [UIViewController]()
         for screen in YPConfig.screens {
@@ -98,8 +105,13 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                 if let videoVC = videoVC {
                     vcs.append(videoVC)
                 }
+            case .custom:
+                if let customVC = customVC {
+                    vcs.append(customVC)
+                }
             }
         }
+        
         controllers = vcs
         
         // Select good mode
@@ -111,6 +123,8 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                 mode = .camera
             case .video:
                 mode = .video
+            case .custom:
+                mode = .custom
             }
         }
         
@@ -150,7 +164,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         case is YPVideoCaptureVC:
             return .video
         default:
-            return .camera
+            return .custom
         }
     }
     
@@ -186,6 +200,8 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
             cameraVC?.stopCamera()
         case .video:
             videoVC?.stopCamera()
+        default:
+            break
         }
     }
     
@@ -229,6 +245,11 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         // Use custom textColor if set by user.
         if let navBarTitleColor = UINavigationBar.appearance().titleTextAttributes?[.foregroundColor] as? UIColor {
             label.textColor = navBarTitleColor
+        }
+        
+        // Use custom font if set by user.
+        if let navBarTitleFont = UINavigationBar.appearance().titleTextAttributes?[.font] as? UIFont {
+            label.font = navBarTitleFont
         }
         
         if YPConfig.library.options != nil {
@@ -280,8 +301,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         switch mode {
         case .library:
             setTitleViewWithTitle(aTitle: libraryVC?.title ?? "")
-            let title = YPWordings().computeNavigationRightButtonText(step: .pick)
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: title,
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.next,
                                                                 style: .done,
                                                                 target: self,
                                                                 action: #selector(done))
@@ -299,6 +319,10 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
             navigationItem.titleView = nil
             title = videoVC?.title
             navigationItem.rightBarButtonItem = nil
+        case .custom:
+            navigationItem.titleView = nil
+            title = customVC?.title
+            navigationItem.rightBarButtonItem = customVC?.navigationItem.rightBarButtonItem
         }
 
         navigationItem.rightBarButtonItem?.setFont(font: YPConfig.fonts.rightBarButtonFont, forState: .normal)

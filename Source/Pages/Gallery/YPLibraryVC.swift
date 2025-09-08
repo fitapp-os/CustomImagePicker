@@ -126,6 +126,10 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
             .addTarget(self,
                        action: #selector(multipleSelectionButtonTapped),
                        for: .touchUpInside)
+        v.assetViewContainer.rotateButton
+            .addTarget(self,
+                       action: #selector(rotateButtonTapped),
+                       for: .touchUpInside)
         
         // Forces assetZoomableView to have a contentSize.
         // otherwise 0 in first selection triggering the bug : "invalid image size 0x0"
@@ -207,6 +211,15 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         v.collectionView.reloadData()
         checkLimit()
         delegate?.libraryViewDidToggleMultipleSelection(enabled: isMultipleSelectionEnabled)
+    }
+    
+    // MARK: - Rotate control
+
+    @objc
+    func rotateButtonTapped() {
+        doAfterLibraryPermissionCheck { [weak self] in
+            self?.v.assetViewContainer.rotateButtonTapped()
+        }
     }
     
     // MARK: - Tap Preview
@@ -479,7 +492,11 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                     switch asset.asset.mediaType {
                     case .image:
                         self.fetchImageAndCrop(for: asset.asset, withCropRect: asset.cropRect) { image, exifMeta in
-                            let photo = YPMediaPhoto(image: image.resizedImageIfNeeded(),
+                            guard let rotatedImage = image.rotate(radians: Float(self.v.assetViewContainer.currentRotationAngle)) else {
+                                return
+                            }
+                            
+                            let photo = YPMediaPhoto(image: rotatedImage.resizedImageIfNeeded(),
 													 exifMeta: exifMeta, asset: asset.asset)
                             resultMediaItems.append(YPMediaItem.photo(p: photo))
                             asyncGroup.leave()
