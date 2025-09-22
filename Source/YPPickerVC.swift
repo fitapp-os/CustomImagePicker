@@ -300,11 +300,15 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                     target: self,
                     action: #selector(close)
                 )
+                
+                navigationItem.leftBarButtonItem?.tintColor = YPConfig.colors.tintColor
             } else {
-                navigationItem.leftBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.cancel,
-                                                                   style: .plain,
-                                                                   target: self,
-                                                                   action: #selector(close))
+                navigationItem.leftBarButtonItem = UIBarButtonItem(
+                    title: YPConfig.wordings.cancel,
+                    style: .plain,
+                    target: self,
+                    action: #selector(close)
+                )
             }
         }
         switch mode {
@@ -316,7 +320,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                     image: UIImage(systemName: "chevron.right", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold)),
                     style: .prominent,
                     target: self,
-                    action: #selector(close)
+                    action: #selector(done)
                 )
             } else {
                 navigationItem.rightBarButtonItem = UIBarButtonItem(
