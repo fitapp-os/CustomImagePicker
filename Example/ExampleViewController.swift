@@ -210,6 +210,8 @@ class ExampleViewController: UIViewController {
         //config.library.options = options
 
         config.library.preselectedItems = selectedItems
+        
+        config.colors.tintColor = UIColor.purple
 
 
 		// Customise fonts
