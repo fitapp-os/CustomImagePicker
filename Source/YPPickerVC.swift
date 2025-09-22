@@ -301,7 +301,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                     action: #selector(close)
                 )
                 
-                navigationItem.leftBarButtonItem?.tintColor = YPConfig.colors.tintColor
+                navigationItem.leftBarButtonItem?.tintColor = YPConfig.colors.closeButtonTintColor
             } else {
                 navigationItem.leftBarButtonItem = UIBarButtonItem(
                     title: YPConfig.wordings.cancel,
@@ -329,10 +329,9 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                     target: self,
                     action: #selector(done)
                 )
-                
             }
 
-            navigationItem.rightBarButtonItem?.tintColor = YPConfig.colors.tintColor
+            navigationItem.rightBarButtonItem?.tintColor = YPConfig.colors.nextButtonTintColor
             // Disable Next Button until minNumberOfItems is reached.
             navigationItem.rightBarButtonItem?.isEnabled = libraryVC!.selectedItems.count >= YPConfig.library.minNumberOfItems
         case .camera:

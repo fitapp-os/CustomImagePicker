@@ -15,6 +15,12 @@ public struct YPColors {
     /// The common tint color which is used for done buttons in navigation bar, multiple items selection and so on.
     public var tintColor = UIColor.ypSystemBlue
     
+    /// The tint color which is used for the close button on the navigation bar
+    public var closeButtonTintColor = UIColor.ypSystemBlue
+    
+    /// The tint color which is used for the next button on the navigation bar
+    public var nextButtonTintColor = UIColor.ypSystemBlue
+    
     /// A color for navigation bar spinner.
     /// Default is nil, which is default iOS gray UIActivityIndicator.
     public var navigationBarActivityIndicatorColor: UIColor?
