@@ -14,7 +14,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/freshOS/Stevia",
-            .exact("6.2.0")
+            .exact("6.2.2")
         ),
         .package(
             url: "https://github.com/HHK1/PryntTrimmerView",
