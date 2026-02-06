@@ -6,6 +6,7 @@
 //  Copyright © 2018 Yummypets. All rights reserved.
 //
 
+import PhotosUI
 import UIKit
 
 extension YPLibraryVC {
@@ -15,6 +16,7 @@ extension YPLibraryVC {
         v.collectionView.dataSource = self
         v.collectionView.delegate = self
         v.collectionView.register(YPLibraryViewCell.self, forCellWithReuseIdentifier: "YPLibraryViewCell")
+        v.collectionView.register(YPLibraryLimitedAccessCell.self, forCellWithReuseIdentifier: "YPLibraryLimitedAccessCell")
         
         // Long press on cell to enable multiple selection
         let longPressGR = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(longPressGR:)))
@@ -31,6 +33,9 @@ extension YPLibraryVC {
         if longPressGR.state == .began {
             let point = longPressGR.location(in: v.collectionView)
             guard let indexPath = v.collectionView.indexPathForItem(at: point) else {
+                return
+            }
+            if isLimitedAccessCell(indexPath) {
                 return
             }
             startMultipleSelection(at: indexPath)
@@ -113,11 +118,25 @@ extension YPLibraryVC {
     func checkLimit() {
         v.maxNumberWarningView.isHidden = !isLimitExceeded || isMultipleSelectionEnabled == false
     }
+
+    private var shouldShowLimitedAccessCell: Bool {
+        return PHPhotoLibrary.authorizationStatus(for: .readWrite) == .limited
+            && mediaManager.hasResultItems
+    }
+
+    private func isLimitedAccessCell(_ indexPath: IndexPath) -> Bool {
+        guard shouldShowLimitedAccessCell else {
+            return false
+        }
+        let itemsCount = mediaManager.fetchResult?.count ?? 0
+        return indexPath.item == itemsCount
+    }
 }
 
 extension YPLibraryVC: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return mediaManager.fetchResult?.count ?? 0
+        let itemsCount = mediaManager.fetchResult?.count ?? 0
+        return itemsCount + (shouldShowLimitedAccessCell ? 1 : 0)
     }
 }
 
@@ -125,6 +144,14 @@ extension YPLibraryVC: UICollectionViewDelegate {
     
     public func collectionView(_ collectionView: UICollectionView,
                                cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if isLimitedAccessCell(indexPath) {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "YPLibraryLimitedAccessCell",
+                                                                for: indexPath) as? YPLibraryLimitedAccessCell else {
+                fatalError("unexpected cell in collection view")
+            }
+            cell.configure(title: YPConfig.wordings.libraryLimitedAction)
+            return cell
+        }
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "YPLibraryViewCell", for: indexPath) as? YPLibraryViewCell else {
             fatalError("unexpected cell in collection view")
         }
@@ -175,6 +202,10 @@ extension YPLibraryVC: UICollectionViewDelegate {
     }
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if isLimitedAccessCell(indexPath) {
+            openLimitedAccessPickerOrSettings()
+            return
+        }
         let previouslySelectedIndexPath = IndexPath(row: currentlySelectedIndex, section: 0)
         currentlySelectedIndex = indexPath.row
 

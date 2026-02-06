@@ -41,6 +41,17 @@ public struct YPWordings {
     public var filter = ypLocalized("YPImagePickerFilter")
     public var crop = ypLocalized("YPImagePickerCrop")
     public var warningMaxItemsLimit = ypLocalized("YPImagePickerWarningItemsLimit")
+
+    public var libraryPermissionDeniedTitle = ypLocalized("YPImagePickerLibraryPermissionDeniedTitle")
+    public var libraryPermissionDeniedMessage = ypLocalized("YPImagePickerLibraryPermissionDeniedMessage")
+    public var libraryPermissionDeniedAction = ypLocalized("YPImagePickerLibraryPermissionDeniedAction")
+
+    public var libraryLimitedTitle = ypLocalized("YPImagePickerLibraryLimitedTitle")
+    public var libraryLimitedMessage = ypLocalized("YPImagePickerLibraryLimitedMessage")
+    public var libraryLimitedAction = ypLocalized("YPImagePickerLibraryLimitedAction")
+
+    public var libraryEmptyTitle = ypLocalized("YPImagePickerLibraryEmptyTitle")
+    public var libraryEmptyMessage = ypLocalized("YPImagePickerLibraryEmptyMessage")
 }
 
 public enum YPImagePickerStep {

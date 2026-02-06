@@ -22,6 +22,7 @@ internal struct YPPermissionManager {
         case .restricted, .denied:
             let alert = YPPermissionDeniedPopup.buildGoToSettingsAlert(cancelBlock: {
                 completion(false)
+                sourceVC.dismiss(animated: true)
             })
             sourceVC.present(alert, animated: true, completion: nil)
         case .notDetermined:

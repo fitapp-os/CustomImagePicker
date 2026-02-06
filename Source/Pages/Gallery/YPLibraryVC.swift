@@ -20,6 +20,7 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
     internal var currentlySelectedIndex: Int = 0
     internal let panGestureHelper = PanGestureHelper()
     internal var isInitialized = false
+    private var currentEmptyState: LibraryEmptyState = .hidden
 
     // MARK: - Init
 
@@ -103,6 +104,10 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+
+        v.emptyStateActionButton.addTarget(self,
+                                           action: #selector(emptyStateActionTapped),
+                                           for: .touchUpInside)
         
         // When crop area changes in multiple selection mode,
         // we need to update the scrollView values in order to restore
@@ -143,6 +148,9 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         if YPConfig.library.minNumberOfItems > 1 {
             multipleSelectionButtonTapped()
         }
+
+        maybeInitializeIfAuthorized()
+        updateEmptyState()
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
@@ -273,6 +281,7 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
             delegate?.libraryViewHaveNoItems()
         }
 
+        updateEmptyState()
         scrollToTop()
     }
     
@@ -345,6 +354,88 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
             @unknown default:
                 ypLog("Bug. Unknown default.")
             }
+        }
+    }
+
+    // MARK: - Empty state
+
+    private enum LibraryEmptyState {
+        case hidden
+        case permissionDenied
+        case limitedPermission
+        case emptyLibrary
+    }
+
+    private func maybeInitializeIfAuthorized() {
+        guard isInitialized == false else {
+            return
+        }
+
+        let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+        if status == .authorized || status == .limited {
+            initialize()
+        }
+    }
+
+    public func updateEmptyState() {
+        let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+        switch status {
+        case .authorized:
+            if mediaManager.hasResultItems {
+                currentEmptyState = .hidden
+                v.hideEmptyState()
+            } else {
+                currentEmptyState = .emptyLibrary
+                v.showEmptyState(title: YPConfig.wordings.libraryEmptyTitle,
+                                 message: YPConfig.wordings.libraryEmptyMessage,
+                                 actionTitle: nil)
+            }
+        case .limited:
+            if mediaManager.hasResultItems {
+                currentEmptyState = .hidden
+                v.hideEmptyState()
+            } else {
+                currentEmptyState = .limitedPermission
+                v.showEmptyState(title: YPConfig.wordings.libraryLimitedTitle,
+                                 message: YPConfig.wordings.libraryLimitedMessage,
+                                 actionTitle: YPConfig.wordings.libraryLimitedAction)
+            }
+        case .denied, .restricted:
+            currentEmptyState = .permissionDenied
+            v.showEmptyState(title: YPConfig.wordings.libraryPermissionDeniedTitle,
+                             message: YPConfig.wordings.libraryPermissionDeniedMessage,
+                             actionTitle: YPConfig.wordings.libraryPermissionDeniedAction)
+        case .notDetermined:
+            currentEmptyState = .hidden
+            v.hideEmptyState()
+        @unknown default:
+            currentEmptyState = .hidden
+            v.hideEmptyState()
+        }
+    }
+
+    @objc
+    private func emptyStateActionTapped() {
+        switch currentEmptyState {
+        case .permissionDenied:
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+        case .limitedPermission:
+            openLimitedAccessPickerOrSettings()
+        case .emptyLibrary, .hidden:
+            break
+        }
+    }
+
+    func openLimitedAccessPickerOrSettings() {
+        if #available(iOS 14, *) {
+            let selector = #selector(PHPhotoLibrary.presentLimitedLibraryPicker(from:))
+            if PHPhotoLibrary.shared().responds(to: selector) {
+                PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: self)
+            } else {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            }
+        } else {
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
         }
     }
 

@@ -48,6 +48,43 @@ internal final class YPLibraryView: UIView {
         v.font = YPConfig.fonts.libaryWarningFont
         return v
     }()
+    internal let emptyStateView: UIView = {
+        let v = UIView()
+        v.backgroundColor = .ypSecondarySystemBackground
+        v.layer.cornerRadius = 12
+        v.isHidden = true
+        v.accessibilityIdentifier = "libraryEmptyStateView"
+        return v
+    }()
+    internal let emptyStateTitleLabel: UILabel = {
+        let v = UILabel()
+        v.font = .systemFont(ofSize: 17, weight: .semibold)
+        v.textColor = .ypLabel
+        v.numberOfLines = 0
+        v.textAlignment = .center
+        return v
+    }()
+    internal let emptyStateMessageLabel: UILabel = {
+        let v = UILabel()
+        v.font = .systemFont(ofSize: 14, weight: .regular)
+        v.textColor = .ypSecondaryLabel
+        v.numberOfLines = 0
+        v.textAlignment = .center
+        return v
+    }()
+    internal let emptyStateActionButton: UIButton = {
+        let v = UIButton(type: .system)
+        v.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
+        v.tintColor = YPConfig.colors.tintColor
+        return v
+    }()
+    private let emptyStateStack: UIStackView = {
+        let v = UIStackView()
+        v.axis = .vertical
+        v.spacing = 8
+        v.alignment = .center
+        return v
+    }()
 
     // MARK: - Private vars
 
@@ -163,7 +200,8 @@ internal final class YPLibraryView: UIView {
     private func setupLayout() {
         subviews(
             collectionContainerView.subviews(
-                collectionView
+                collectionView,
+                emptyStateView
             ),
             line,
             assetViewContainer.subviews(
@@ -177,6 +215,32 @@ internal final class YPLibraryView: UIView {
 
         collectionContainerView.fillContainer()
         collectionView.fillHorizontally().bottom(0)
+
+        emptyStateView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            emptyStateView.centerXAnchor.constraint(equalTo: collectionView.centerXAnchor),
+            emptyStateView.centerYAnchor.constraint(equalTo: collectionView.centerYAnchor),
+            emptyStateView.leadingAnchor.constraint(greaterThanOrEqualTo: collectionView.leadingAnchor,
+                                                   constant: 24),
+            emptyStateView.trailingAnchor.constraint(lessThanOrEqualTo: collectionView.trailingAnchor,
+                                                    constant: -24),
+            emptyStateView.widthAnchor.constraint(lessThanOrEqualToConstant: 320)
+        ])
+
+        emptyStateView.subviews(
+            emptyStateStack
+        )
+        emptyStateStack.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            emptyStateStack.topAnchor.constraint(equalTo: emptyStateView.topAnchor, constant: 16),
+            emptyStateStack.bottomAnchor.constraint(equalTo: emptyStateView.bottomAnchor, constant: -16),
+            emptyStateStack.leadingAnchor.constraint(equalTo: emptyStateView.leadingAnchor, constant: 16),
+            emptyStateStack.trailingAnchor.constraint(equalTo: emptyStateView.trailingAnchor, constant: -16)
+        ])
+        emptyStateStack.addArrangedSubview(emptyStateTitleLabel)
+        emptyStateStack.addArrangedSubview(emptyStateMessageLabel)
+        emptyStateStack.addArrangedSubview(emptyStateActionButton)
+        collectionContainerView.bringSubviewToFront(emptyStateView)
 
         assetViewContainer.Bottom == line.Top
         line.height(1)
@@ -194,5 +258,24 @@ internal final class YPLibraryView: UIView {
         |maxNumberWarningView|.bottom(0)
         maxNumberWarningView.Top == safeAreaLayoutGuide.Bottom - 40
         maxNumberWarningLabel.centerHorizontally().top(11)
+    }
+
+    func showEmptyState(title: String,
+                        message: String,
+                        actionTitle: String?) {
+        emptyStateTitleLabel.text = title
+        emptyStateMessageLabel.text = message
+        if let actionTitle = actionTitle, !actionTitle.isEmpty {
+            emptyStateActionButton.setTitle(actionTitle, for: .normal)
+            emptyStateActionButton.isHidden = false
+        } else {
+            emptyStateActionButton.setTitle(nil, for: .normal)
+            emptyStateActionButton.isHidden = true
+        }
+        emptyStateView.isHidden = false
+    }
+
+    func hideEmptyState() {
+        emptyStateView.isHidden = true
     }
 }

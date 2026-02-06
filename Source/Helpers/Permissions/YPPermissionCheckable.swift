@@ -23,6 +23,9 @@ internal extension YPPermissionCheckable where Self: UIViewController {
             if hasPermission {
                 block()
             } else {
+                if let libraryVC = self as? YPLibraryVC {
+                    libraryVC.updateEmptyState()
+                }
                 ypLog("Not enough permissions.")
             }
         }
