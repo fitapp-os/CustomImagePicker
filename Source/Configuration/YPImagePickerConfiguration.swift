@@ -46,6 +46,48 @@ public struct YPImagePickerConfiguration {
     
     /// Use this property to modify the default wordings provided.
     public var wordings = YPWordings()
+
+    // MARK: - Wordings Convenience Accessors
+
+    public var libraryPermissionDeniedTitle: String {
+        get { wordings.libraryPermissionDeniedTitle }
+        set { wordings.libraryPermissionDeniedTitle = newValue }
+    }
+
+    public var libraryPermissionDeniedMessage: String {
+        get { wordings.libraryPermissionDeniedMessage }
+        set { wordings.libraryPermissionDeniedMessage = newValue }
+    }
+
+    public var libraryPermissionDeniedAction: String {
+        get { wordings.libraryPermissionDeniedAction }
+        set { wordings.libraryPermissionDeniedAction = newValue }
+    }
+
+    public var libraryLimitedTitle: String {
+        get { wordings.libraryLimitedTitle }
+        set { wordings.libraryLimitedTitle = newValue }
+    }
+
+    public var libraryLimitedMessage: String {
+        get { wordings.libraryLimitedMessage }
+        set { wordings.libraryLimitedMessage = newValue }
+    }
+
+    public var libraryLimitedAction: String {
+        get { wordings.libraryLimitedAction }
+        set { wordings.libraryLimitedAction = newValue }
+    }
+
+    public var libraryEmptyTitle: String {
+        get { wordings.libraryEmptyTitle }
+        set { wordings.libraryEmptyTitle = newValue }
+    }
+
+    public var libraryEmptyMessage: String {
+        get { wordings.libraryEmptyMessage }
+        set { wordings.libraryEmptyMessage = newValue }
+    }
     
     /// Use this property to modify the default icons provided.
     public var icons = YPIcons()
