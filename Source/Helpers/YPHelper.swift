@@ -11,17 +11,8 @@ import UIKit
 import Photos
 
 internal func ypLocalized(_ str: String) -> String {
-    let tableName = "YPImagePickerLocalizable"
-    let mainValue = NSLocalizedString(str,
-                                      tableName: tableName,
-                                      bundle: .main,
-                                      value: "",
-                                      comment: "")
-    if mainValue != str && !mainValue.isEmpty {
-        return mainValue
-    }
     return NSLocalizedString(str,
-                             tableName: tableName,
+                             tableName: "YPImagePickerLocalizable",
                              bundle: Bundle.local,
                              value: "",
                              comment: "")
