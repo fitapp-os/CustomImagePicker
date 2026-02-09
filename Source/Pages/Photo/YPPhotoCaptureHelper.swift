@@ -37,14 +37,24 @@ internal final class YPPhotoCaptureHelper: NSObject {
 // MARK: - Public
 
 extension YPPhotoCaptureHelper {
-    func shoot(completion: @escaping (Data) -> Void) {
+    @discardableResult
+    func shoot(completion: @escaping (Data) -> Void) -> Bool {
         block = completion
         
         // Set current device orientation
         setCurrentOrienation()
         
+        guard session.isRunning,
+              let connection = photoOutput.connection(with: .video),
+              connection.isEnabled,
+              connection.isActive else {
+            block = nil
+            return false
+        }
+
         let settings = photoCaptureSettings()
         photoOutput.capturePhoto(with: settings, delegate: self)
+        return true
     }
     
     func start(with previewView: UIView, completion: @escaping () -> Void) {

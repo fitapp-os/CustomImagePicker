@@ -139,7 +139,7 @@ internal final class YPCameraVC: UIViewController, UIGestureRecognizerDelegate, 
         // causing a crash
         v.shotButton.isEnabled = false
 
-        photoCapture.shoot { imageData in
+        let didStartCapture = photoCapture.shoot { imageData in
             
             guard let shotImage = UIImage(data: imageData) else {
                 return
@@ -162,6 +162,15 @@ internal final class YPCameraVC: UIViewController, UIGestureRecognizerDelegate, 
             
             DispatchQueue.main.async {
                 self.didCapturePhoto?(noOrietationImage.resizedImageIfNeeded())
+            }
+        }
+        
+        if !didStartCapture {
+            v.shotButton.isEnabled = true
+            photoCapture.start(with: v.previewViewContainer) { [weak self] in
+                DispatchQueue.main.async {
+                    self?.updateFlashButtonUI()
+                }
             }
         }
     }
