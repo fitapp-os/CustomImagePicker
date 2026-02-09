@@ -23,8 +23,17 @@ extension YPLibraryVC: PHPhotoLibraryChangeObserver {
 
         DispatchQueue.main.async {
             let collectionView = self.v.collectionView
-            self.mediaManager.fetchResult = collectionChanges.fetchResultAfterChanges
-            if !collectionChanges.hasIncrementalChanges || collectionChanges.hasMoves {
+            let newFetchResult = collectionChanges.fetchResultAfterChanges
+            let removedCount = collectionChanges.removedIndexes?.count ?? 0
+            let insertedCount = collectionChanges.insertedIndexes?.count ?? 0
+            let expectedNewCount = fetchResult.count - removedCount + insertedCount
+            let shouldReload = !collectionChanges.hasIncrementalChanges
+                || collectionChanges.hasMoves
+                || expectedNewCount != newFetchResult.count
+
+            self.mediaManager.fetchResult = newFetchResult
+
+            if shouldReload {
                 collectionView.reloadData()
             } else {
                 collectionView.performBatchUpdates({
