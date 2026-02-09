@@ -58,7 +58,7 @@ internal final class YPLibraryView: UIView {
     }()
     internal let emptyStateTitleLabel: UILabel = {
         let v = UILabel()
-        v.font = .systemFont(ofSize: 17, weight: .semibold)
+        v.font = .rubikFont(ofSize: 17, weight: .semibold)
         v.textColor = .ypLabel
         v.numberOfLines = 0
         v.textAlignment = .center
@@ -66,7 +66,7 @@ internal final class YPLibraryView: UIView {
     }()
     internal let emptyStateMessageLabel: UILabel = {
         let v = UILabel()
-        v.font = .systemFont(ofSize: 14, weight: .regular)
+        v.font = .rubikFont(ofSize: 14, weight: .regular)
         v.textColor = .ypSecondaryLabel
         v.numberOfLines = 0
         v.textAlignment = .center
@@ -74,7 +74,7 @@ internal final class YPLibraryView: UIView {
     }()
     internal let emptyStateActionButton: UIButton = {
         let v = UIButton(type: .system)
-        v.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
+        v.titleLabel?.font = .rubikFont(ofSize: 15, weight: .semibold)
         v.tintColor = YPConfig.colors.tintColor
         return v
     }()
