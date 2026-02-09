@@ -19,8 +19,8 @@ final class YPLibraryLimitedAccessCell: UICollectionViewCell {
 
     private let titleLabel: UILabel = {
         let v = UILabel()
-        v.font = YPConfig.fonts.pickerTitleFont.withSize(14)
-        v.textColor = .ypLabel
+        v.font = .rubikFont(ofSize: 14)
+        v.textColor = YPConfig.colors.labelColorPrimary
         v.textAlignment = .center
         v.numberOfLines = 2
         v.adjustsFontSizeToFitWidth = true
