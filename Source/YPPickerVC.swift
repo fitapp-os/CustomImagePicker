@@ -316,7 +316,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
             setTitleViewWithTitle(aTitle: libraryVC?.title ?? "")
                 
             if #available(iOS 26.0, *) {
-                let isRTL = UIView.userInterfaceLayoutDirection(for: .unspecified) == .leftToRight
+                let isRTL = UIView.userInterfaceLayoutDirection(for: .unspecified) == .rightToLeft
                 let iconName = isRTL ? "chevron.left" : "chevron.right"
                 navigationItem.rightBarButtonItem = UIBarButtonItem(
                     image: UIImage(systemName: iconName, withConfiguration: UIImage.SymbolConfiguration(weight: .semibold)),
