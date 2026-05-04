@@ -11,10 +11,18 @@ import Photos
 
 internal extension PHFetchResult where ObjectType == PHAsset {
     func assetsAtIndexPaths(_ indexPaths: [IndexPath]) -> [PHAsset] {
-        if indexPaths.count == 0 { return [] }
+        if indexPaths.isEmpty { return [] }
+        let fetchCount = self.count
+
+        let validIndexPaths = indexPaths.filter { indexPath in
+            indexPath.item >= 0 && indexPath.item < fetchCount
+        }
+
+        if validIndexPaths.isEmpty { return [] }
+
         var assets: [PHAsset] = []
-        assets.reserveCapacity(indexPaths.count)
-        for indexPath in indexPaths {
+        assets.reserveCapacity(validIndexPaths.count)
+        for indexPath in validIndexPaths {
             let asset = self[indexPath.item]
             assets.append(asset)
         }
