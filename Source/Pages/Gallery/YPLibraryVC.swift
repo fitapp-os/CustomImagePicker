@@ -552,18 +552,27 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                               videoCallback: @escaping (_ videoURL: YPMediaVideo) -> Void,
                               multipleItemsCallback: @escaping (_ items: [YPMediaItem]) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
+            let selectedItems = self.selectedItems
+            let isMultipleSelectionEnabled = self.isMultipleSelectionEnabled
             
-            let selectedAssets: [(asset: PHAsset, cropRect: CGRect?)] = self.selectedItems.compactMap {
+            let selectedAssets: [(asset: PHAsset, cropRect: CGRect?)] = selectedItems.compactMap {
                 guard let asset = PHAsset.fetchAssets(withLocalIdentifiers: [$0.assetIdentifier],
                                                       options: PHFetchOptions()).firstObject else {
-                    ypLog("Error!")
+                    ypLog("Could not resolve selected asset.")
                     return nil
                 }
                 return (asset, $0.cropRect)
             }
+
+            guard let firstAsset = selectedAssets.first?.asset else {
+                DispatchQueue.main.async {
+                    self.delegate?.libraryViewFinishedLoading()
+                }
+                return
+            }
             
             // Multiple selection
-            if self.isMultipleSelectionEnabled && self.selectedItems.count > 1 {
+            if isMultipleSelectionEnabled && selectedItems.count > 1 {
                 
                 // Check video length
                 for asset in selectedAssets {
@@ -647,7 +656,7 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                     self.delegate?.libraryViewFinishedLoading()
                 }
             } else {
-                let asset = selectedAssets.first!.asset
+                let asset = firstAsset
                 switch asset.mediaType {
                 case .audio, .unknown:
                     return
