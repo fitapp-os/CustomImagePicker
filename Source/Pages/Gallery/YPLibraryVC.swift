@@ -563,13 +563,6 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                 }
                 return (asset, $0.cropRect)
             }
-
-            guard let firstAsset = selectedAssets.first?.asset else {
-                DispatchQueue.main.async {
-                    self.delegate?.libraryViewFinishedLoading()
-                }
-                return
-            }
             
             // Multiple selection
             if isMultipleSelectionEnabled && selectedItems.count > 1 {
@@ -656,7 +649,11 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                     self.delegate?.libraryViewFinishedLoading()
                 }
             } else {
-                let asset = firstAsset
+                guard let asset = selectedAssets.first?.asset else {
+  					ypLog("No asset found in selection")
+  					return
+  				}
+				
                 switch asset.mediaType {
                 case .audio, .unknown:
                     return
@@ -677,7 +674,9 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                     self.fetchImageAndCrop(for: asset) { image, exifMeta in
                         DispatchQueue.main.async {
                             self.delegate?.libraryViewFinishedLoading()
-                            let photo = YPMediaPhoto(image: image.resizedImageIfNeeded(),
+                            let rotationAngle = self.v.assetViewContainer.currentRotationAngle
+                            let rotatedImage = image.rotate(radians: Float(rotationAngle)) ?? image
+                            let photo = YPMediaPhoto(image: rotatedImage.resizedImageIfNeeded(),
                                                      exifMeta: exifMeta,
                                                      asset: asset)
                             photoCallback(photo)

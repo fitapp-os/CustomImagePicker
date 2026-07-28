@@ -15,47 +15,16 @@ extension YPLibraryVC: PHPhotoLibraryChangeObserver {
     }
     
     public func photoLibraryDidChange(_ changeInstance: PHChange) {
-        guard let fetchResult = self.mediaManager.fetchResult,
-              let collectionChanges = changeInstance.changeDetails(for: fetchResult) else {
-            ypLog("Some problems there.")
-            return
-        }
-
         DispatchQueue.main.async {
-            let collectionView = self.v.collectionView
-            let newFetchResult = collectionChanges.fetchResultAfterChanges
-            let removedCount = collectionChanges.removedIndexes?.count ?? 0
-            let insertedCount = collectionChanges.insertedIndexes?.count ?? 0
-            let expectedNewCount = fetchResult.count - removedCount + insertedCount
-            let shouldReload = !collectionChanges.hasIncrementalChanges
-                || collectionChanges.hasMoves
-                || expectedNewCount != newFetchResult.count
-
-            self.mediaManager.fetchResult = newFetchResult
-
-            if shouldReload {
-                collectionView.reloadData()
-            } else {
-                collectionView.performBatchUpdates({
-                    if let removedIndexes = collectionChanges.removedIndexes,
-                       removedIndexes.count != 0 {
-                        collectionView.deleteItems(at: removedIndexes.aapl_indexPathsFromIndexesWithSection(0))
-                    }
-
-                    if let insertedIndexes = collectionChanges.insertedIndexes, insertedIndexes.count != 0 {
-                        collectionView.insertItems(at: insertedIndexes.aapl_indexPathsFromIndexesWithSection(0))
-                    }
-                }, completion: { finished in
-                    guard finished,
-                          let changedIndexes = collectionChanges.changedIndexes,
-                          changedIndexes.count != 0 else {
-                        ypLog("Some problems there.")
-                        return
-                    }
-
-                    collectionView.reloadItems(at: changedIndexes.aapl_indexPathsFromIndexesWithSection(0))
-                })
+            guard let fetchResult = self.mediaManager.fetchResult,
+                  let collectionChanges = changeInstance.changeDetails(for: fetchResult) else {
+                ypLog("Some problems there.")
+                return
             }
+
+            let collectionView = self.v.collectionView
+            self.mediaManager.fetchResult = collectionChanges.fetchResultAfterChanges
+            collectionView.reloadData()
 
             self.updateAssetSelection()
             self.mediaManager.resetCachedAssets()
