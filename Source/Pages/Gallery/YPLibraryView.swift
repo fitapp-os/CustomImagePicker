@@ -246,8 +246,32 @@ internal final class YPLibraryView: UIView {
         line.height(1)
         line.fillHorizontally()
 
-        assetViewContainer.top(0).fillHorizontally().heightEqualsWidth()
-        self.assetViewContainerConstraintTop = assetViewContainer.topConstraint
+        assetViewContainer.translatesAutoresizingMaskIntoConstraints = false
+        let assetViewContainerTopConstraint = assetViewContainer.topAnchor.constraint(equalTo: topAnchor)
+        var assetViewContainerConstraints = [
+            assetViewContainerTopConstraint,
+            assetViewContainer.centerXAnchor.constraint(equalTo: centerXAnchor),
+            assetViewContainer.heightAnchor.constraint(equalTo: assetViewContainer.widthAnchor)
+        ]
+
+        if let maximumPreviewWidth = YPConfig.library.maximumPreviewWidth {
+            let fillAvailableWidthConstraint = assetViewContainer.widthAnchor.constraint(equalTo: widthAnchor)
+            fillAvailableWidthConstraint.priority = .defaultHigh
+            assetViewContainerConstraints.append(contentsOf: [
+                assetViewContainer.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor),
+                assetViewContainer.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor),
+                assetViewContainer.widthAnchor.constraint(lessThanOrEqualToConstant: maximumPreviewWidth),
+                fillAvailableWidthConstraint
+            ])
+        } else {
+            assetViewContainerConstraints.append(contentsOf: [
+                assetViewContainer.leadingAnchor.constraint(equalTo: leadingAnchor),
+                assetViewContainer.trailingAnchor.constraint(equalTo: trailingAnchor)
+            ])
+        }
+
+        NSLayoutConstraint.activate(assetViewContainerConstraints)
+        self.assetViewContainerConstraintTop = assetViewContainerTopConstraint
         assetZoomableView.fillContainer().heightEqualsWidth()
         assetZoomableView.Bottom == collectionView.Top
         assetViewContainer.sendSubviewToBack(assetZoomableView)

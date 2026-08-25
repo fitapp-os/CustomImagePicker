@@ -228,6 +228,9 @@ public struct YPConfigLibrary {
     /// Set the spacing between items in collection view. Defaults to 1.0.
     public var spacingBetweenItems: CGFloat = 1.0
 
+    /// Maximum width of the square library preview. Set to nil to fill the available width.
+    public var maximumPreviewWidth: CGFloat?
+
     /// Allow to skip the selections gallery when selecting the multiple media items. Defaults to false.
     public var skipSelectionsGallery = false
     
